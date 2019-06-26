@@ -12,7 +12,12 @@ var topPaddlePosX;
 var topPaddlePosY;  
 var bottomPaddlePosX;
 var bottomPaddlePosY;
-var ballVelocity = 0.05;
+var paddleHeight = 0.05;
+var paddleWidth = 0.15;
+var ballWidth = 0.02;
+var ballHeight = 0.04;
+var ballVelocityX = 0;
+var ballVelocityY = 0.05;
 
 // Returns a random integer from 0 to range - 1.
 function randomInt(range) {
@@ -52,57 +57,49 @@ function onClickNewGame() {
 }
 
 function onClickLeft() {
-  old();
 }
 
 function onClickRight() {
-
-
-}
-
-function old(){
-  // Get A WebGL context
-  var canvas = document.getElementById("display");
-  var gl = canvas.getContext("webgl");
-  if (!gl) {
-    return;
-  }
-  // Setup a random rectangle
-  // This will write to positionBuffer because
-  // its the last thing we bound on the ARRAY_BUFFER
-  // bind point
-  setRectangle(
-      gl, randomFloat(), randomFloat(), randomFloat(), randomFloat());
-
-  // Set a random color.
-  var colorUniformLocation = gl.getUniformLocation(window.program, "u_color");
-  gl.uniform4f(colorUniformLocation, Math.random(), Math.random(), Math.random(), 1);
-
-  // Draw the rectangle.
-  gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2);
 }
 
 function initGame(gl)
 {
   gl.clear(gl.COLOR_BUFFER_BIT);
+
+  // Set a random color.
+  var colorUniformLocation = gl.getUniformLocation(window.program, "u_color");
+  gl.uniform4f(colorUniformLocation, Math.random(), Math.random(), Math.random(), 1);
+
   vertices = [];
-  topPaddlePosX = -0.15/2;
+  topPaddlePosX = -paddleWidth/2;
   topPaddlePosY = -1;  
-  bottomPaddlePosX = -0.15/2;
-  bottomPaddlePosY = 1-0.05;
-  ballPosX = -0.01/2;
-  ballPosY = -0.02/2;
+  bottomPaddlePosX = -paddleWidth/2;
+  bottomPaddlePosY = 1-paddleHeight;
+  ballPosX = -ballWidth/2;
+  ballPosY = -ballHeight/2;
 
   drawPaddle(gl, topPaddlePosX, topPaddlePosY);
   drawPaddle(gl, bottomPaddlePosX, bottomPaddlePosY);
   drawBall(gl, ballPosX, ballPosY);
 
-  engineInterval = setInterval(runEngine, enginePeriodMS);
-
+  // engineInterval = setInterval(runEngine, enginePeriodMS);
+  runEngine();
 }
 
 function terminateGame(){
-  clearInterval(runEngine);
+  // clearInterval(runEngine);
+}
+
+function drawGame(){
+  var canvas = document.getElementById("display");
+  var gl = canvas.getContext("webgl");
+  vertices = [];
+  gl.clear(gl.COLOR_BUFFER_BIT);
+
+  drawPaddle(gl, topPaddlePosX, topPaddlePosY);
+  drawPaddle(gl, bottomPaddlePosX, bottomPaddlePosY);
+  drawBall(gl, ballPosX, ballPosY);
+  vertices = null;
 }
 
 function runEngine(){
@@ -111,41 +108,35 @@ function runEngine(){
   if (!gl) {
     return;
   }
-  ballPosY -= ballVelocity;
-  if (ballPosY < -1 || ballPosY > 1){
+
+  ballPosY -= ballVelocityY;
+
+  if(ballPosY <= -1 + paddleHeight && ballPosX >= bottomPaddlePosX && ballPosX <= bottomPaddlePosX + paddleWidth){
+    ballVelocityY *= -1;
+  }
+  else if(ballPosY >= 1 - paddleHeight && ballPosX >= topPaddlePosX && ballPosX <= topPaddlePosX + paddleWidth){
+    ballVelocityY *= -1;
+  }
+
+  else if (ballPosY < -1 || ballPosY > 1){
     terminateGame();
     return;
   }
-
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  vertices = [];
-  drawPaddle(gl, topPaddlePosX, topPaddlePosY);
-  drawPaddle(gl, bottomPaddlePosX, bottomPaddlePosY);
-  drawBall(gl, ballPosX, ballPosY);
+  drawGame();
+  requestAnimationFrame(runEngine);
 }
 
 // use convention position=topleft
 function drawPaddle(gl, x, y) {
-  var width = 0.15;
-  var height = 0.05;
-  setRectangle(gl, x, y, width, height);
-
-  // Set a random color.
-  var colorUniformLocation = gl.getUniformLocation(window.program, "u_color");
-  gl.uniform4f(colorUniformLocation, Math.random(), Math.random(), Math.random(), 1);
+  setRectangle(gl, x, y, paddleWidth, paddleHeight);
 
   // Draw the rectangle.
   gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2);
 }
 
 function drawBall(gl, x, y) {
-  var width = 0.02;
-  var height = 0.04;
-  setRectangle(gl, x, y, width, height);
 
-  // Set a random color.
-  var colorUniformLocation = gl.getUniformLocation(window.program, "u_color");
-  gl.uniform4f(colorUniformLocation, Math.random(), Math.random(), Math.random(), 1);
+  setRectangle(gl, x, y, ballWidth, ballHeight);
 
   // Draw the rectangle.
   gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2);
@@ -242,11 +233,6 @@ function main() {
 
   initGame(gl);
 
-
-  // draw
-  var primitiveType = gl.TRIANGLES;
-  var offset = 0;
-  gl.drawArrays(primitiveType, offset, vertices.length/2);
 }
 
 main();
