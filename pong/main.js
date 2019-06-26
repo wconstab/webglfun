@@ -4,6 +4,15 @@
 // Globals
 var program;
 var vertices = [];
+var engineInterval;
+var enginePeriodMS = 100;
+var ballPosX;
+var ballPosY;
+var topPaddlePosX;
+var topPaddlePosY;  
+var bottomPaddlePosX;
+var bottomPaddlePosY;
+var ballVelocity = 0.05;
 
 // Returns a random integer from 0 to range - 1.
 function randomInt(range) {
@@ -39,8 +48,7 @@ function setRectangle(gl, x, y, width, height) {
 function onClickNewGame() {
   var canvas = document.getElementById("display");
   var gl = canvas.getContext("webgl");
-  gl.clear(gl.COLOR_BUFFER_BIT);
-  vertices = [];
+  initGame(gl);
 }
 
 function onClickLeft() {
@@ -72,6 +80,48 @@ function old(){
 
   // Draw the rectangle.
   gl.drawArrays(gl.TRIANGLES, 0, vertices.length/2);
+}
+
+function initGame(gl)
+{
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  vertices = [];
+  topPaddlePosX = -0.15/2;
+  topPaddlePosY = -1;  
+  bottomPaddlePosX = -0.15/2;
+  bottomPaddlePosY = 1-0.05;
+  ballPosX = -0.01/2;
+  ballPosY = -0.02/2;
+
+  drawPaddle(gl, topPaddlePosX, topPaddlePosY);
+  drawPaddle(gl, bottomPaddlePosX, bottomPaddlePosY);
+  drawBall(gl, ballPosX, ballPosY);
+
+  engineInterval = setInterval(runEngine, enginePeriodMS);
+
+}
+
+function terminateGame(){
+  clearInterval(runEngine);
+}
+
+function runEngine(){
+  var canvas = document.getElementById("display");
+  var gl = canvas.getContext("webgl");
+  if (!gl) {
+    return;
+  }
+  ballPosY -= ballVelocity;
+  if (ballPosY < -1 || ballPosY > 1){
+    terminateGame();
+    return;
+  }
+
+  gl.clear(gl.COLOR_BUFFER_BIT);
+  vertices = [];
+  drawPaddle(gl, topPaddlePosX, topPaddlePosY);
+  drawPaddle(gl, bottomPaddlePosX, bottomPaddlePosY);
+  drawBall(gl, ballPosX, ballPosY);
 }
 
 // use convention position=topleft
@@ -190,9 +240,7 @@ function main() {
       positionAttributeLocation, size, type, normalize, stride, offset);
 
 
-  drawPaddle(gl, -0.15/2, -1);
-  drawPaddle(gl, -0.15/2, 1-0.05);
-  drawBall(gl, -0.01/2, -0.02/2);
+  initGame(gl);
 
 
   // draw
