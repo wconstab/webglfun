@@ -71,6 +71,21 @@ function onClickRight() {
   }
 }
 
+function autoTopPaddle() {
+  if(ballPosX < topPaddlePosX + paddleWidth/2){
+    topPaddlePosX -= 0.1;
+    if(topPaddlePosX < -1){
+      topPaddlePosX = -1;
+    }
+  }
+  else if(ballPosX > topPaddlePosX + paddleWidth/2){
+    topPaddlePosX += 0.1;
+    if(topPaddlePosX > 1 - paddleWidth){
+      topPaddlePosX = 1 - paddleWidth;
+    }
+  }
+}
+
 function onKeyPress(e) {
   console.log(e, e.code);
   switch(e.key){
@@ -151,6 +166,8 @@ function runEngine(){
 
   document.querySelector("#ball_x").innerHTML = ballPosX;
   document.querySelector("#ball_y").innerHTML = ballPosY;
+
+  autoTopPaddle();
 
   drawGame();
   requestAnimationFrame(runEngine);
