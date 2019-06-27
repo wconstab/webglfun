@@ -10,8 +10,8 @@ var paddleHeight = 0.05;
 var paddleWidth = 0.15;
 var ballWidth = 0.02;
 var ballHeight = 0.04;
-var ballVelocityX = 0;
-var ballVelocityY = 0.05;
+var ballVelocityX = 0.005;
+var ballVelocityY = 0.01;
 var ballPosX;
 var ballPosY;
 var topPaddlePosX;
@@ -128,17 +128,25 @@ function runEngine(){
   }
 
   ballPosY -= ballVelocityY;
+  ballPosX -= ballVelocityX;
 
-  if(ballPosY <= -1 + paddleHeight && ballPosX >= bottomPaddlePosX && ballPosX <= bottomPaddlePosX + paddleWidth){
+  if(ballPosY <= -1 + paddleHeight &&
+     ballPosX >= bottomPaddlePosX &&
+     ballPosX <= bottomPaddlePosX + paddleWidth){
     ballVelocityY *= -1;
   }
-  else if(ballPosY >= 1 - paddleHeight && ballPosX >= topPaddlePosX && ballPosX <= topPaddlePosX + paddleWidth){
+  else if(ballPosY >= 1 - ballHeight - paddleHeight &&
+          ballPosX >= topPaddlePosX &&
+          ballPosX <= topPaddlePosX + paddleWidth){
     ballVelocityY *= -1;
+  }
+  else if(ballPosX >= 1 - ballWidth || ballPosX <= -1){
+    ballVelocityX *= -1;
   }
 
   else if (ballPosY < -1 || ballPosY > 1){
     terminateGame();
-    // return;
+    return;
   }
 
   document.querySelector("#ball_x").innerHTML = ballPosX;
