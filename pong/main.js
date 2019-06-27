@@ -72,14 +72,14 @@ function onClickRight() {
 }
 
 function autoTopPaddle() {
-  if(ballPosX < topPaddlePosX + paddleWidth/2){
-    topPaddlePosX -= 0.1;
+  if(ballPosX < topPaddlePosX){
+    topPaddlePosX -= 0.01;
     if(topPaddlePosX < -1){
       topPaddlePosX = -1;
     }
   }
-  else if(ballPosX > topPaddlePosX + paddleWidth/2){
-    topPaddlePosX += 0.1;
+  else if(ballPosX > topPaddlePosX + paddleWidth){
+    topPaddlePosX += 0.01;
     if(topPaddlePosX > 1 - paddleWidth){
       topPaddlePosX = 1 - paddleWidth;
     }
@@ -167,7 +167,9 @@ function runEngine(){
   document.querySelector("#ball_x").innerHTML = ballPosX;
   document.querySelector("#ball_y").innerHTML = ballPosY;
 
-  autoTopPaddle();
+  if(ballPosY > 0) {
+    autoTopPaddle();
+  }
 
   drawGame();
   requestAnimationFrame(runEngine);
