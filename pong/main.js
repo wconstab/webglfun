@@ -140,6 +140,10 @@ function runEngine(){
     terminateGame();
     // return;
   }
+
+  document.querySelector("#ball_x").innerHTML = ballPosX;
+  document.querySelector("#ball_y").innerHTML = ballPosY;
+
   drawGame();
   requestAnimationFrame(runEngine);
 }
