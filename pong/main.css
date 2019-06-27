@@ -7,17 +7,14 @@ Lots of info from:
   box-sizing: border-box;
   font-family: Arial, Helvetica, sans-serif;
   max-width: 900px;
-  margin: auto;
 }
 
-/* Style the content */
 .header {
   background-color: #333;
   color: white;
   padding: 10px;
 }
 
-/* Style the content */
 .content {
   background-color: #ddd;
   padding: 10px;
@@ -26,7 +23,6 @@ Lots of info from:
 .debuginfo {
   display: none;
 }
-/* Style the footer */
 .footer {
   background-color: #f1f1f1;
   padding: 10px;
@@ -34,6 +30,7 @@ Lots of info from:
 canvas {
   width: 800px;
   height: 450px;
-  display: block;
-  background-color: black
+  /*display: block;*/
+  background-color: black;
+  margin-bottom: 20px;
 }
