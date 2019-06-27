@@ -6,18 +6,19 @@ var program;
 var vertices = [];
 var engineInterval;
 var enginePeriodMS = 100;
-var ballPosX;
-var ballPosY;
-var topPaddlePosX;
-var topPaddlePosY;  
-var bottomPaddlePosX;
-var bottomPaddlePosY;
 var paddleHeight = 0.05;
 var paddleWidth = 0.15;
 var ballWidth = 0.02;
 var ballHeight = 0.04;
 var ballVelocityX = 0;
 var ballVelocityY = 0.05;
+var ballPosX;
+var ballPosY;
+var topPaddlePosX;
+var topPaddlePosY = 1 - paddleHeight;  
+var bottomPaddlePosX;
+var bottomPaddlePosY = -1;
+
 
 // Returns a random integer from 0 to range - 1.
 function randomInt(range) {
@@ -57,11 +58,30 @@ function onClickNewGame() {
 }
 
 function onClickLeft() {
+  bottomPaddlePosX -= 0.1;
+  if(bottomPaddlePosX < -1){
+    bottomPaddlePosX = -1;
+  }
 }
 
 function onClickRight() {
+  bottomPaddlePosX += 0.1;
+  if(bottomPaddlePosX > 1 - paddleWidth){
+    bottomPaddlePosX = 1 - paddleWidth;
+  }
 }
 
+function onKeyPress(e) {
+  console.log(e, e.code);
+  switch(e.key){
+    case "ArrowLeft":
+      onClickLeft();
+      break;
+    case "ArrowRight":
+      onClickRight();
+      break;
+  }
+}
 function initGame(gl)
 {
   gl.clear(gl.COLOR_BUFFER_BIT);
@@ -72,9 +92,7 @@ function initGame(gl)
 
   vertices = [];
   topPaddlePosX = -paddleWidth/2;
-  topPaddlePosY = -1;  
   bottomPaddlePosX = -paddleWidth/2;
-  bottomPaddlePosY = 1-paddleHeight;
   ballPosX = -ballWidth/2;
   ballPosY = -ballHeight/2;
 
@@ -87,7 +105,7 @@ function initGame(gl)
 }
 
 function terminateGame(){
-  // clearInterval(runEngine);
+  console.log("terminateGame");
 }
 
 function drawGame(){
@@ -120,7 +138,7 @@ function runEngine(){
 
   else if (ballPosY < -1 || ballPosY > 1){
     terminateGame();
-    return;
+    // return;
   }
   drawGame();
   requestAnimationFrame(runEngine);
@@ -176,6 +194,8 @@ function main() {
   if (!gl) {
     return;
   }
+
+  window.addEventListener("keydown", onKeyPress);
 
   // Get the strings for our GLSL shaders
   var vertexShaderSource = document.getElementById("2d-vertex-shader").text;
